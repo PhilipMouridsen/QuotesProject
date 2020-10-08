@@ -4,11 +4,8 @@ import urllib.request
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
-
-data = pd.read_csv("artikelurls10.csv", encoding="utf-16", sep='\t')
-
-
-
+data = pd.read_csv("artikelurls.csv", encoding="utf-16", sep='\t')
+total = 0
 
 print(data.describe)
 print(data.head)
@@ -19,10 +16,13 @@ print(data)
 
 
 def getHTML(url):
-    print("fetching article")
+    global total
+    total = total + 1 
+    print("fetching article", total)
     fp = urlopen(url).read()
     print ("DONE")
     return fp
+    
 
 
 def get_text_from_HTML(html):
@@ -34,25 +34,23 @@ def get_text_from_HTML(html):
     for p in paragraphs:
         result = result + p.text + newline
         newline = "\n"
-    # get text
-    text = soup.get_text()
-    # break into lines and remove leading and trailing space on each
-    lines = (line.strip() for line in text.splitlines())
-    # break multi-headlines into a line each
-    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-    # drop blank lines
-    text = '\n'.join(chunk for chunk in chunks if chunk)
 
     return result
 
 data['HTML'] = [getHTML(x) for x in data['URL']]
 data['Text'] = [get_text_from_HTML(x) for x in data['HTML']]
+data = data.drop(columns=['HTML', 'URL'])
 
 print (data)
-print (data['URL'].iloc[0])
 print (data['Text'].iloc[0])
 
+data.to_csv("test.csv", encoding="utf-16", sep='\t')
 
+# test the file
+test = pd.read_csv('test.csv',encoding="utf-16", sep='\t')
+print(test)
 
+for text in test['Text']:
+    print(text)
 
 # html = urlopen(url).read()
