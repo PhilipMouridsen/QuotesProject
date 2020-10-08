@@ -41,16 +41,13 @@ data['HTML'] = [getHTML(x) for x in data['URL']]
 data['Text'] = [get_text_from_HTML(x) for x in data['HTML']]
 data = data.drop(columns=['HTML', 'URL'])
 
-print (data)
-print (data['Text'].iloc[0])
-
 data.to_csv("test.csv", encoding="utf-16", sep='\t')
 
 # test the file
 test = pd.read_csv('test.csv',encoding="utf-16", sep='\t')
 print(test)
 
-for text in test['Text']:
-    print(text)
+# for text in test['Text']:
+#    print(text)
 
 # html = urlopen(url).read()
