@@ -8,7 +8,7 @@ import concurrent.futures
 MAX_THREADS = 100
 start_time = time.time()
 
-data = pd.read_csv("artikelurls.csv", encoding="utf-16", sep='\t', index_col=0)
+data = pd.read_csv("artikelurls100.csv", encoding="utf-16", sep='\t', index_col=0)
 total = 0 # counter for keeping track of progress
 
 # drop unnescessary columns
@@ -55,5 +55,5 @@ print("DONE WITH ALL")
 
 print("WRITE TO FILE")
 print('Total time:', time.time()-start_time)
-data.to_csv("test.csv", encoding="utf-16", sep='\t')
+data.to_csv("test100.csv", encoding="utf-16", sep='\t')
 
