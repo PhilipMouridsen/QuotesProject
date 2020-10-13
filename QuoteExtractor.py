@@ -1,0 +1,1 @@
+# (\n-\s)(.*)?(?=(, (siger|uddyber|mener|skriver|lød|lyder)))
