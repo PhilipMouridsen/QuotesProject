@@ -10,7 +10,10 @@ print("DONE reading data")
 data['nQuotes'] = data.apply(lambda row: len(row.Quotes), axis=1)
 
 print(data.info())
+data.describe()
 print(data)
+
+print (data['Område'])
 
 hist = data.hist(column='nQuotes', bins=50)
 plt.show()
