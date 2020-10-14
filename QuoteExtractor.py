@@ -4,7 +4,7 @@ import re
 from collections import Counter
 
 print("reading data")
-data = pd.read_csv("largefiles/artikler.csv", encoding="utf-16", sep='\t', index_col=0)
+data = pd.read_csv("largefiles/test10000.csv", encoding="utf-16", sep='\t', index_col=0)
 print("DONE reading data")
 
 # Get the list of words that ends a typical quote. For example "siger", "udtaler", "uddyber" 
@@ -62,4 +62,4 @@ def commawords_to_file(quotelists, filename):
             file.write("%s, %d\n" % (key, value))
 
 # data.to_json("largefiles/quotesALL.json")
-data.to_csv("largefiles/quotesALL.csv", encoding="utf-16", sep='\t')
+data.to_csv("data/quotes10000.csv", encoding="utf-16", sep='\t')
