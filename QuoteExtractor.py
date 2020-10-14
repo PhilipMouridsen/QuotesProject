@@ -4,29 +4,33 @@ import re
 from collections import Counter
 
 print("reading data")
-data = pd.read_csv("test100.csv", encoding="utf-16", sep='\t', index_col=0)
+data = pd.read_csv("data/test1000.csv", encoding="utf-16", sep='\t', index_col=0)
 print("DONE reading data")
 
+# Get the list of words that ends a typical quote. For example "siger", "udtaler", "uddyber" 
 quotewords = []
 with open("quotequalifiers.txt", "r", encoding="utf-16") as file:
     quotewords = file.read().splitlines()
+
+# Build a regex of the form "(?:, (?:word1|word2|word3|...)).*" with wordn being a word in the list of quotequalifiers
+# This is used to filter out the "atribution-part" of a quote of the form: ", siger statsministeren" or ", udtaler han"
+filter_pattern = ""
+delimiter = "(?:, (?:"
+for word in quotewords:
+    filter_pattern = filter_pattern  + delimiter + word
+    delimiter = "|"
+filter_pattern = filter_pattern + ")).*"
+
 
 
 def get_quotes(id):
     text = data.loc[id, "Text"]
     if pd.isna(text): return []
-    pattern = r"((?<=\n- ).*(?=\n))" # get everything between "newline-dash-space" and the next "newline" 
-    quotes = re.findall(pattern, text)
-    # r".+?(?=(, (skrev|skriver)))"
-    pattern = ""
-    delimiter = "(?:, (?:"
-    for word in quotewords:
-        pattern = pattern  + delimiter + word
-        delimiter = "|"
-    pattern = pattern + ")).*"
-    # print (pattern)
+    quote_pattern = r"((?<=\n- ).*(?=\n))" # get everything between "newline-dash-space" and the next "newline" 
+    quotes = re.findall(quote_pattern, text)
+   
     for i, quote in enumerate(quotes):
-        quotes[i] = re.sub(pattern, "", quote)
+        quotes[i] = re.sub(filter_pattern, "", quote)
         
     return quotes
 
@@ -57,25 +61,5 @@ def commawords_to_file(quotelists, filename):
         for key, value in sorted_list:
             file.write("%s, %d\n" % (key, value))
 
-print (get_quotes(data.index[0]))
+data.to_csv("data/quotes1000.csv", encoding="utf-16", sep='\t')
 
-
-for id in data.index:    
-    # print (data.loc[id, 'Text'])
-    print()
-    print("QUOTES")
-    for quote in data.loc[id, 'Quotes']:
-        print(quote)
-    print("------------------------")
-
-# commawords_to_file(quotelists, 'test.txt')
-
-
-
-
-
-
-# get the word after a comma
-# "(?<=, )\w*\b"
-
-# ((?<=\n- ).*(?=\n))

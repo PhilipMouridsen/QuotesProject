@@ -131,4 +131,4 @@ dmypy.json
 # Big Data Files
 artikler.csv
 
-/data
+/largefiles
