@@ -10,15 +10,6 @@ print(data.info())
 print(data)
 
 
-id = data.index[50]
-print(data.loc[id, 'Text'])
-quotes = (data.loc[id, 'Quotes'])
-c = 0
-for quote in quotes:
-    c += 1
-    print("Q" + str(c) + ": " + quote)
-
-
 nQuotes = 0
 articles_with_quotes = 0
 for quotes in data['Quotes']:
