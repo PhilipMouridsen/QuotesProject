@@ -1,0 +1,42 @@
+positive unlabeled learning
+positive unsupervised
+
+embedding space
+Beart. Framework from google. Jeppe trying nordic Beart.
+data in numerical format
+text is dificult
+
+
+way to describe sentences
+
+
+convert sentence to a vector of numbers
+
+
+
+SVM
+
+
+
+Get the vector
+
+
+hugging face with pytorch
+
+mulitlingual beart is the one
+
+
+
+bagofwords tdidf as a baseline
+
+
+ranking methology
+
+
+random lines from dataset that isnt news could be a 
+
+
+
+
+
+

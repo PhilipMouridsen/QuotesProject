@@ -1,0 +1,15 @@
+* quote data identified!!
+* research question "what sets these apart from normal speech?"
+* these quotes represent the positive class only
+* where can we get negatives, when the original full interview transcript is unavailable
+* "lanchart" spoken language corpus, danish
+
+ 
+
+* need to convert sentences to vectors (with e.g. 100 dimensions)
+* use multilingual bert for this
+* start with huggingface and pytorch architecture
+* positive data from Lasse's quotes. Negative data from .. elsewhere (lanchart, wikipedia, ...)
+* build a classifier e.g. SVM, using random samples as negative examples and quotes as positive examples
+* train on held-out data; how do we do?
+* BERT intro scripts to be made available
