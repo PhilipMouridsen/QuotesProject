@@ -6,6 +6,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, plot_confusion_matrix
 import matplotlib.pyplot as plt
+from segmentizer import Segmentizer
 
 
 ################################################################
@@ -54,12 +55,16 @@ def ids2text(tokens, concat=True):
 qt = pd.read_csv("data/quotes100.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
 qt = qt.explode('Quotes').drop(columns=['Pub.', 'HTML', 'Text', 'Titel', 'Område', 'URL', 'Format'])
 qt = qt.dropna()
+qt['Quotes'] = qt.Quotes.apply(Segmentizer.get_segments)
+qt = qt.explode('Quotes')
+print (qt)
 qt.reset_index(drop=True, inplace=True)
 
-# not_qt holds lines from a speech by the speaker of the danish parliament
-not_qt = pd.read_csv("data/tale.txt", sep='\n')
+# not_qt holds segments from the danish wikipedia-article on Denmark
+not_qt = pd.read_csv("data/wiki-segmentized.csv", sep='\t', index_col=0)
 not_qt.columns= ['Quotes']
 
+print(not_qt)
 
 # Settings
 model_tag = "bert-base-multilingual-uncased"
@@ -110,12 +115,9 @@ qt['is_quote'] = 1
 not_qt['is_quote'] = 0
 combined = pd.concat([qt, not_qt]).reset_index()
 extracted = pd.DataFrame(combined['vec'].tolist(), index=combined.index)
-print(combined)
-print(extracted)
 
 combined = combined.merge(extracted, right_on=extracted.index, left_on=combined.index)
 combined = combined.drop(columns=['Quotes','index','key_0','vec'])
-print(combined)
 
 X_train, X_test, y_train, y_test = train_test_split(combined.drop(columns=['is_quote']), combined.is_quote, test_size=0.2)
 
@@ -123,58 +125,12 @@ print (X_train)
 print (X_test)
 
 model = SVC()
-
 model.fit(X_train, y_train)
+
 plot_confusion_matrix(model, X_test, y_test)
 plt.show()
 
 score = model.score(X_test, y_test)
 print("Score:", score )
 
-# Prepare data for model - we use the tokenizer for creating the necessary input for BERT.
-# All kinds of cool things can be done here depending on what task we are working on
-# prepared_data = tokenizer(texts, padding=True, return_tensors="pt")
 
-# Here I just extract the necessary components
-# input_ids = prepared_data["input_ids"]
-# token_type_ids = prepared_data["token_type_ids"]
-# attention_mask = prepared_data["attention_mask"]
-# assert all(input_ids[:, cls_loc] == tokenizer.cls_token_id)  # I'm just making sure its correct so far
-
-# Print data - for sanity
-# You can see how BERT uses special tokens like [CLS], [SEP] and [PAD] for various things
-# for i in range(input_ids.shape[0]):
-#     temp = tokenizer.convert_ids_to_tokens(input_ids[i, :])  # Convert token-numbers back to token-strings
-#     print(f"{temp!s:100s}  -->  {ids2text(temp)}")  # Print nicely
-
-# # Run BERT model
-# model_output = model(
-#     input_ids=input_ids,
-#     token_type_ids=token_type_ids,
-#     attention_mask=attention_mask,
-#     return_dict=True,
-# )
-
-# # Get stuff
-# last_hidden_state = model_output["last_hidden_state"]
-# pooler_output = model_output["pooler_output"]
-
-# # The state at the "[CLS]"-token is what should be used for classification
-# classification_vectors = last_hidden_state[:, cls_loc, :].detach().numpy()  # type: np.ndarray
-# print(classification_vectors)
-
-
-# classification_vectors is now a numpy array of shape [n_samples, n_dimensions] which can be used for classification
-
-
-
-
-
-# Gennemgang af Jeppes eksempel
-# Forstå classification-fremgangsmåden
-# preprocessing - del op i sætninger? hvor mange negative vs positive eksempler?
-# Indhold rapporten
-#       - afsnit, hvad forventer han?
-#       - disposition
-# Sentiment-analyse?
-# 0 1 - 0.5 
