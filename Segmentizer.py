@@ -34,25 +34,21 @@ class Segmentizer:
 
         return result
 
+    def textfile_to_dataframe(filename):
+        data = pd.read_csv(filename, encoding='utf-8', sep='\n')
+        data.columns=['text']    
+        data['Quotes'] = data.text.apply(Segmentizer.get_segments)
+        data = data.explode('Quotes').reset_index()
+        data = data.drop(columns=['text', 'index'])
+        return data
+
 
 def main():
     
-    data = pd.read_csv("data/wiki.txt", encoding='utf-8', sep='\n')
-    data.columns=['text']
-
-    print (data)
-    
-    senti = Afinn(language='da')
-
-    print(data.iloc[1])
-
-    data['segment'] = data.text.apply(Segmentizer.get_segments)
-    data = data.explode('segment').reset_index()
-    data = data.drop(columns=['text', 'index'])
-    print (data)
+    queen = Segmentizer.textfile_to_dataframe("data/queen2019.txt")
+    print(queen)
 
     # data.to_csv('data/wiki-segmentized.csv', sep="\t")
-
 
 
 if __name__ == "__main__":

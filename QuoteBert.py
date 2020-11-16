@@ -4,7 +4,7 @@ from transformers import BertTokenizer, BertModel
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import plot_confusion_matrix
 import matplotlib.pyplot as plt
 from segmentizer import Segmentizer
 
@@ -45,6 +45,11 @@ def ids2text(tokens, concat=True):
     return answer
 
 
+# takes a column with values in a list and returns a dataframe with one value in each column 
+def list_to_dataframe(column):
+    df = pd.DataFrame(column.tolist())
+    return df
+
 ################################################################
 
 
@@ -52,21 +57,26 @@ def ids2text(tokens, concat=True):
 
 # get data
 # qt holds quotes from 100 articles
+print("Loading Quotes...")
 qt = pd.read_csv("data/quotes100.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
 qt = qt.explode('Quotes').drop(columns=['Pub.', 'HTML', 'Text', 'Titel', 'Område', 'URL', 'Format'])
 qt = qt.dropna()
+
+ # split quotes into segements split by . (punktum)
 qt['Quotes'] = qt.Quotes.apply(Segmentizer.get_segments)
 qt = qt.explode('Quotes')
-print (qt)
 qt.reset_index(drop=True, inplace=True)
 
+
+# Load the negative examples
 # not_qt holds segments from the danish wikipedia-article on Denmark
+print("Loading Non-Quotes")
 not_qt = pd.read_csv("data/wiki-segmentized.csv", sep='\t', index_col=0)
 not_qt.columns= ['Quotes']
 
-print(not_qt)
 
 # Settings
+print ("Configuring BERT model...")
 model_tag = "bert-base-multilingual-uncased"
 cls_loc = 0
 
@@ -80,6 +90,7 @@ model = BertModel.from_pretrained(model_tag)
 def prepare(text):
     return tokenizer(text, padding=True, return_tensors="pt")
 
+# for sanity
 def back_to_text(input_ids):
     result = ""
     for i in range(input_ids.shape[0]):
@@ -87,6 +98,7 @@ def back_to_text(input_ids):
         result = result + " " + ids2text(temp)
     return result
 
+# takes a string as input - returns a BERT-vector
 def get_BERT_vector(str):
     prepared = prepare(str)
     input_ids = prepared["input_ids"]
@@ -106,31 +118,43 @@ def get_BERT_vector(str):
     return vector[0]
 
 
+
+
+# convert the strings to BERT vectors in the two tables
+print("Assign vectors to quotes")
 qt['vec'] = qt['Quotes'].apply(get_BERT_vector)
+print ('Assign vectors to non-quotes')
 not_qt['vec'] = not_qt['Quotes'].apply(get_BERT_vector)
-print(qt)
-
-
 qt['is_quote'] = 1
 not_qt['is_quote'] = 0
+
+# combine quotes and non-quotes and get the features and labels for training
 combined = pd.concat([qt, not_qt]).reset_index()
-extracted = pd.DataFrame(combined['vec'].tolist(), index=combined.index)
+y = combined.is_quote
+X = list_to_dataframe(combined['vec'])
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
 
-combined = combined.merge(extracted, right_on=extracted.index, left_on=combined.index)
-combined = combined.drop(columns=['Quotes','index','key_0','vec'])
+# train classifier on data
+svm_clf = SVC()
+svm_clf.fit(X_train, y_train)
 
-X_train, X_test, y_train, y_test = train_test_split(combined.drop(columns=['is_quote']), combined.is_quote, test_size=0.2)
-
-print (X_train)
-print (X_test)
-
-model = SVC()
-model.fit(X_train, y_train)
-
-plot_confusion_matrix(model, X_test, y_test)
+# show result
+plot_confusion_matrix(svm_clf, X_test, y_test)
 plt.show()
-
-score = model.score(X_test, y_test)
+score = svm_clf.score(X_test, y_test)
 print("Score:", score )
+
+##########################3
+# test classifier on queens speech
+# 
+print('predicting on the queens speech...')
+queen = Segmentizer.textfile_to_dataframe('data/queen2019.txt').reset_index()
+queen['vec'] = queen['Quotes'].apply(get_BERT_vector)
+X = list_to_dataframe(queen['vec'])
+predictions = svm_clf.predict(X)
+queen['predict'] = predictions
+pd.set_option('display.max_rows', None)
+print (queen[['Quotes', 'predict']].head(len(queen)))
+
 
 
