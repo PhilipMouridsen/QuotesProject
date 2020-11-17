@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel, BertTokenizerFast
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
@@ -81,7 +81,7 @@ model_tag = "bert-base-multilingual-uncased"
 cls_loc = 0
 
 # Get a 'tokenizer', it converts words/tokens to token-numbers that represent those words
-tokenizer = BertTokenizer.from_pretrained(model_tag)
+tokenizer = BertTokenizerFast.from_pretrained(model_tag)
 
 # Get the BERT model, it takes the tokenized word-numbers and does magic on it (for example get vector output)
 model = BertModel.from_pretrained(model_tag)
@@ -131,7 +131,7 @@ print("Assign vectors to quotes")
 
 quotes = qt['Quotes'].to_list()  # Get all texts (the .apply-function is quite limited)
 not_quotes = not_qt['Quotes'].to_list() 
-batch_size = 1  # You should probably use something like 32 or 64
+batch_size = 64  # You should probably use something like 32 or 64
 
 # Split texts into batches
 quote_batches = [quotes[i:min(i + batch_size, len(quotes))] for i in range(0, len(quotes), batch_size)]
