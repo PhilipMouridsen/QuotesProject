@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_confusion_matrix
 import matplotlib.pyplot as plt
 from segmentizer import Segmentizer
-
+import time
 
 ################################################################
 
@@ -99,8 +99,8 @@ def back_to_text(input_ids):
     return result
 
 # takes a string as input - returns a BERT-vector
-def get_BERT_vector(str):
-    prepared = prepare(str)
+def get_BERT_vectors(strings):
+    prepared = tokenizer(strings, padding=True, return_tensors="pt")
     input_ids = prepared["input_ids"]
     token_type_ids = prepared["token_type_ids"]
     attention_mask = prepared["attention_mask"]
@@ -115,18 +115,42 @@ def get_BERT_vector(str):
     last_hidden_state = model_output["last_hidden_state"]
     vector = last_hidden_state[:, cls_loc, :].detach().numpy()  # type: np.ndarray
 
-    return vector[0]
+    return vector
+
+
+
+
 
 
 
 
 # convert the strings to BERT vectors in the two tables
 print("Assign vectors to quotes")
-qt['vec'] = qt['Quotes'].apply(get_BERT_vector)
-print ('Assign vectors to non-quotes')
-not_qt['vec'] = not_qt['Quotes'].apply(get_BERT_vector)
-qt['is_quote'] = 1
-not_qt['is_quote'] = 0
+
+
+
+quotes = qt['Quotes'].to_list()  # Get all texts (the .apply-function is quite limited)
+not_quotes = not_qt['Quotes'].to_list() 
+batch_size = 1  # You should probably use something like 32 or 64
+
+# Split texts into batches
+quote_batches = [quotes[i:min(i + batch_size, len(quotes))] for i in range(0, len(quotes), batch_size)]
+not_quote_batches = [not_quotes[i:min(i + batch_size, len(not_quotes))] for i in range(0, len(not_quotes), batch_size)]
+
+# Compute all vectors through BERT
+
+start = time.time()
+quote_vectors = np.concatenate([get_BERT_vectors(val) for val in quote_batches], axis=0)
+not_quote_vectors = np.concatenate([get_BERT_vectors(val) for val in not_quote_batches], axis=0)
+print('Time: ', time.time()-start)
+
+exit()
+
+# qt['vec'] = qt['Quotes'].apply(get_BERT_vector)
+# print ('Assign vectors to non-quotes')
+# not_qt['vec'] = not_qt['Quotes'].apply(get_BERT_vector)
+# qt['is_quote'] = 1
+# not_qt['is_quote'] = 0
 
 # combine quotes and non-quotes and get the features and labels for training
 combined = pd.concat([qt, not_qt]).reset_index()
