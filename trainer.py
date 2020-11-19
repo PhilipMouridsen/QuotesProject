@@ -23,11 +23,11 @@ model = model_class.from_pretrained(pretrained_weights)
 elapsed = time.time() - start_time
 print('initialized bert in', elapsed, 'seconds')
 
-quotes_file = pd.read_csv("data/quotes1000.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
+quotes_file = pd.read_csv("data/quotes10000.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
 quotes_file = quotes_file.head(100)
 quotes_file = quotes_file.explode('Quotes').drop(columns=['Pub.', 'Text', 'Titel', 'Område', 'Format'])
-quotes_file = quotes_file.dropna()
-quotes = quotes_file
+quotes_file = quotes_file.dropna(subset=['Quotes'])
+quotes = quotes_file[['Quotes']]
 quotes['Quotes'] = quotes_file.Quotes.apply(Segmentizer.get_segments)
 quotes = quotes.explode('Quotes')
 quotes.reset_index(drop=True, inplace=True)
@@ -35,6 +35,7 @@ quotes['label'] = 1
 
 negatives = pd.read_csv('data/ft2016.tsv', encoding='utf-8', sep='\t', index_col=0)
 negatives.columns = ['Quotes']
+negatives.dropna(subset=['Quotes'])
 negatives = negatives.head(1000)
 negatives['label'] = 0
 
@@ -82,6 +83,11 @@ print('Finished Training BERT with', len(X), 'strings. Total time:', time.time()
 
 y = combined['label']
 
+df_vectors = pd.DataFrame(X)
+df_vectors['label'] = y
+
+print(df_vectors)
+
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
 
 log_res = LogisticRegression(max_iter=10000)
@@ -90,9 +96,10 @@ log_res.fit(X_train, y_train)
 print('Accuracy:', log_res.score(X_test, y_test))
 
 
+filename = 'models/quotemodel_' + str(len(X))
+
+dump(log_res, filename+'.joblib')
+df_vectors.to_csv(filename+'.bert', index=False)
+
 plot_confusion_matrix(log_res, X_test, y_test)
-filename = 'models/quotemodel_' + str(len(X_train)) + '.joblib'
-
-dump(log_res, filename)
-
 plt.show()
