@@ -1,0 +1,12 @@
+Abstract
+	1. Introduction
+	2. Related Work
+		a. Quote Extraction and Analysis for News
+		b. Context-Based Quotation Recommendation
+		c. Catching Attention with Automatic Pull Quote Selection 
+		d. Osv. 
+	3. Quote extraction
+	4. Methods
+	5. Dataset
+	6. Results And Analysis
+Conclusion

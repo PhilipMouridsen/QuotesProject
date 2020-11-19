@@ -2,7 +2,7 @@ positive unlabeled learning
 positive unsupervised
 
 embedding space
-Beart. Framework from google. Jeppe trying nordic Beart.
+Bert. Framework from google. Jeppe trying nordic Bert.
 data in numerical format
 text is dificult
 
@@ -27,7 +27,7 @@ mulitlingual beart is the one
 
 
 
-bagofwords tdidf as a baseline
+bagofwords tfidf as a baseline
 
 
 ranking methology
