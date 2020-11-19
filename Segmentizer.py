@@ -10,7 +10,7 @@ class Segmentizer:
         pass
 
     def get_segments(text):
-        pattern = "(([a-z]|[%!]|[1-9])\.) ([A-Z|Æ|Ø|Å])"
+        pattern = "(([a-z]|[%!]|[1-9])\.) *([A-Z|Æ|Ø|Å])"
         sentences = re.split(pattern, text)
 
         def chunks(lst, n):
