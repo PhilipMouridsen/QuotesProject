@@ -142,6 +142,7 @@ not_quote_batches = [not_quotes[i:min(i + batch_size, len(not_quotes))] for i in
 start = time.time()
 quote_vectors = np.concatenate([get_BERT_vectors(val) for val in quote_batches], axis=0)
 not_quote_vectors = np.concatenate([get_BERT_vectors(val) for val in not_quote_batches], axis=0)
+
 print('Time: ', time.time()-start)
 
 exit()
