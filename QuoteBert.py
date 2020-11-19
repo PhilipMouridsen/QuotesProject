@@ -137,6 +137,9 @@ batch_size = 64  # You should probably use something like 32 or 64
 quote_batches = [quotes[i:min(i + batch_size, len(quotes))] for i in range(0, len(quotes), batch_size)]
 not_quote_batches = [not_quotes[i:min(i + batch_size, len(not_quotes))] for i in range(0, len(not_quotes), batch_size)]
 
+
+
+
 # Compute all vectors through BERT
 
 start = time.time()
