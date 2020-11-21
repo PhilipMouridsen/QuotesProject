@@ -1,188 +1,75 @@
-import re
 import numpy as np
-from transformers import BertTokenizer, BertModel, BertTokenizerFast
 import pandas as pd
-from sklearn.svm import SVC
+import torch
+import transformers as tf
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import plot_confusion_matrix
-import matplotlib.pyplot as plt
 from segmentizer import Segmentizer
-import time
 
-################################################################
+class QuoteBERT:
 
-def ids2text(tokens, concat=True):
-    """
-    This function simply takes the de-tokenized word from BERT and converts to string.
+    def __init__(self, data):
+        # setup BERT
+        self.model_class = tf.DistilBertModel
+        self.tokenizer_class = tf.DistilBertTokenizer
+        self.pretrained_weights = 'distilbert-base-multilingual-cased'
+        self.tokenizer = self.tokenizer_class.from_pretrained(self.pretrained_weights)
+        self.model = self.model_class.from_pretrained(self.pretrained_weights)
 
-    :param tokens:
-    :param concat:
-    :return: str
-    """
-    single_symbol_pattern = re.compile(r"^\W$")
+        self.data = data
+        self.X = np.empty((0,768))
+        self.train()
 
-    # First token
-    answer = [tokens[0]]
+    def train(self):
 
-    # Select the remaining answer tokens and join them with whitespace.
-    for token in tokens[1:]:
+        # split data into batches so the BERT process does not run out of memory
+        batch_size = 4
+        batches = [self.data[i:min(i + batch_size, len(self.data))] for i in range(0, len(self.data), batch_size)]
 
-        # If it's a subword token, then recombine it with the previous token.
-        if token[0:2] == '##':
-            answer.append(token[2:])
+        iteration = 0
+        n_iterations = len(batches)
+        
+        # loop to process each batch
+        for batch in batches:
+            iteration += 1 # counter
+            print (batch.index)
 
-        # Otherwise, add the token with possible space.
-        else:
-            if single_symbol_pattern.match(token):
-                answer.append(token)
-            else:
-                answer.append(' ' + token)
+            # transform the sentences to tokens
+            tokenized = batch['Quotes'].apply((lambda x: self.tokenizer.encode(x, add_special_tokens=True)))
 
-    # Format
-    if concat:
-        answer = "".join(answer)
+            # add padding for uniform length
+            max_len = 0
+            for i in tokenized.values:
+                if len(i) > max_len:
+                    max_len = len(i)
 
-    return answer
+            padded = np.array([i + [0]*(max_len-len(i)) for i in tokenized.values])
 
+            attention_mask = np.where(padded != 0, 1, 0)
+            input_ids = torch.tensor(padded).to(torch.long)  
+            attention_mask = torch.tensor(attention_mask)
 
-# takes a column with values in a list and returns a dataframe with one value in each column 
-def list_to_dataframe(column):
-    df = pd.DataFrame(column.tolist())
-    return df
+            # do the actual work - and get the precious vectors
+            with torch.no_grad():
+                last_hidden_states = self.model(input_ids, attention_mask=attention_mask)
+            
+            vectors = last_hidden_states[0][:,0,:].numpy()
+            
+            # add the newly generated batch of vectors to the collection
+            self.X = np.concatenate((self.X,vectors), axis=0)
+            print('Training BERT - iteration', iteration,'/', n_iterations)
 
-################################################################
-
-
-
-
-# get data
-# qt holds quotes from 100 articles
-print("Loading Quotes...")
-qt = pd.read_csv("data/quotes100.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
-qt = qt.explode('Quotes').drop(columns=['Pub.', 'HTML', 'Text', 'Titel', 'Område', 'URL', 'Format'])
-qt = qt.dropna()
-
- # split quotes into segements split by . (punktum)
-qt['Quotes'] = qt.Quotes.apply(Segmentizer.get_segments)
-qt = qt.explode('Quotes')
-qt.reset_index(drop=True, inplace=True)
+    def get_vectors(self):
+        return self.X
 
 
-# Load the negative examples
-# not_qt holds segments from the danish wikipedia-article on Denmark
-print("Loading Non-Quotes")
-not_qt = pd.read_csv("data/wiki-segmentized.csv", sep='\t', index_col=0)
-not_qt.columns= ['Quotes']
-
-
-# Settings
-print ("Configuring BERT model...")
-model_tag = "bert-base-multilingual-uncased"
-cls_loc = 0
-
-# Get a 'tokenizer', it converts words/tokens to token-numbers that represent those words
-tokenizer = BertTokenizerFast.from_pretrained(model_tag)
-
-# Get the BERT model, it takes the tokenized word-numbers and does magic on it (for example get vector output)
-model = BertModel.from_pretrained(model_tag)
-
-# prepare data 
-def prepare(text):
-    return tokenizer(text, padding=True, return_tensors="pt")
-
-# for sanity
-def back_to_text(input_ids):
-    result = ""
-    for i in range(input_ids.shape[0]):
-        temp = tokenizer.convert_ids_to_tokens(input_ids[i, :])  # Convert token-numbers back to token-strings
-        result = result + " " + ids2text(temp)
-    return result
-
-# takes a string as input - returns a BERT-vector
-def get_BERT_vectors(strings):
-    prepared = tokenizer(strings, padding=True, return_tensors="pt")
-    input_ids = prepared["input_ids"]
-    token_type_ids = prepared["token_type_ids"]
-    attention_mask = prepared["attention_mask"]
-
-    model_output = model(
-        input_ids=input_ids,
-        token_type_ids=token_type_ids,
-        attention_mask=attention_mask,
-        return_dict=True,
-    )
-
-    last_hidden_state = model_output["last_hidden_state"]
-    vector = last_hidden_state[:, cls_loc, :].detach().numpy()  # type: np.ndarray
-
-    return vector
-
-
-
-
-
-
-
-
-# convert the strings to BERT vectors in the two tables
-print("Assign vectors to quotes")
-
-
-
-quotes = qt['Quotes'].to_list()  # Get all texts (the .apply-function is quite limited)
-not_quotes = not_qt['Quotes'].to_list() 
-batch_size = 64  # You should probably use something like 32 or 64
-
-# Split texts into batches
-quote_batches = [quotes[i:min(i + batch_size, len(quotes))] for i in range(0, len(quotes), batch_size)]
-not_quote_batches = [not_quotes[i:min(i + batch_size, len(not_quotes))] for i in range(0, len(not_quotes), batch_size)]
-
-
-
-
-# Compute all vectors through BERT
-
-start = time.time()
-quote_vectors = np.concatenate([get_BERT_vectors(val) for val in quote_batches], axis=0)
-not_quote_vectors = np.concatenate([get_BERT_vectors(val) for val in not_quote_batches], axis=0)
-
-print('Time: ', time.time()-start)
-
-exit()
-
-# qt['vec'] = qt['Quotes'].apply(get_BERT_vector)
-# print ('Assign vectors to non-quotes')
-# not_qt['vec'] = not_qt['Quotes'].apply(get_BERT_vector)
-# qt['is_quote'] = 1
-# not_qt['is_quote'] = 0
-
-# combine quotes and non-quotes and get the features and labels for training
-combined = pd.concat([qt, not_qt]).reset_index()
-y = combined.is_quote
-X = list_to_dataframe(combined['vec'])
-X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
-
-# train classifier on data
-svm_clf = SVC()
-svm_clf.fit(X_train, y_train)
-
-# show result
-plot_confusion_matrix(svm_clf, X_test, y_test)
-plt.show()
-score = svm_clf.score(X_test, y_test)
-print("Score:", score )
-
-##########################3
-# test classifier on queens speech
-# 
-print('predicting on the queens speech...')
-queen = Segmentizer.textfile_to_dataframe('data/queen2019.txt').reset_index()
-queen['vec'] = queen['Quotes'].apply(get_BERT_vector)
-X = list_to_dataframe(queen['vec'])
-predictions = svm_clf.predict(X)
-queen['predict'] = predictions
-pd.set_option('display.max_rows', None)
-print (queen[['Quotes', 'predict']].head(len(queen)))
-
-
-
+        
+        
+if __name__ == '__main__':
+    data = pd.DataFrame(["Dette er en sætning", "dette er en super fed sætning"])
+    data.columns=['Quotes']
+    print (data)
+    qb = QuoteBERT(data)
+    vec = qb.get_vectors()
+    print(vec)

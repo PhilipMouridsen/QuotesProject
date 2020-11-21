@@ -25,28 +25,23 @@ print('initialized bert in', elapsed, 'seconds')
 
 # load and preprocess the quptes
 quotes_file = pd.read_csv("data/quotes10000.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
-quotes_file = quotes_file.head(100) # change to change the number of quotes to use for training
 quotes_file = quotes_file.explode('Quotes').drop(columns=['Pub.', 'Text', 'Titel', 'Område', 'Format'])
 quotes_file = quotes_file.dropna(subset=['Quotes'])
 quotes = quotes_file[['Quotes']]
 quotes['Quotes'] = quotes_file.Quotes.apply(Segmentizer.get_segments)
 quotes = quotes.explode('Quotes')
-quotes.reset_index(drop=True, inplace=True)
+quotes = quotes[quotes['Quotes'].map(len) < 400] # drop very long sentences as they are probably due to error in data
+quotes = quotes.reset_index(drop=True).head(10000) # change to change the number of quotes to use for training
 quotes['label'] = 1 # assign positive label to quotes
 
 # load and preprocess the non-quotes
-negatives = pd.read_csv('data/ft2016.tsv', encoding='utf-8', sep='\t', index_col=0)
+negatives = pd.read_csv('data/ft2016.tsv', encoding='utf-8', sep='\t', index_col=0).reset_index(drop=True)
 negatives.columns = ['Quotes']
-negatives.dropna(subset=['Quotes'])
-negatives = negatives.head(1000)
+negatives = negatives.head(100000)
 negatives['label'] = 0 # assign negative label to quotes
 
-# print(negatives)
-
-# combine the two types of data 
-combined = pd.concat([quotes, negatives], axis=0).reset_index(drop=True)
-
-# print (combined)
+# combine the two types of data
+combined = pd.concat([quotes, negatives], axis=0).dropna().reset_index(drop=True)
 
 # split data into batches so the BERT process does not run out of memory
 batch_size = 4
@@ -59,6 +54,7 @@ X = np.empty((0,768))
 # loop to process each batch
 for batch in batches:
     iteration += 1 # counter
+    print (batch.index)
 
     # transform the sentences to tokens
     tokenized = batch['Quotes'].apply((lambda x: tokenizer.encode(x, add_special_tokens=True)))
@@ -100,7 +96,7 @@ log_res.fit(X_train, y_train)
 print('Accuracy:', log_res.score(X_test, y_test))
 
 # save the model to file
-filename = 'models/quotemodel_' + str(len(X))
+filename = 'largemodels/quotemodel_' + str(len(X))
 dump(log_res, filename+'.joblib')
 
 # save the vectors to file

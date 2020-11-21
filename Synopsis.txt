@@ -1,12 +1,37 @@
 Abstract
 	1. Introduction
+		a. problem description
+		c. The functionality/role of the quote in journalism
+		b. novelty of task
 	2. Related Work
-		a. Quote Extraction and Analysis for News
-		b. Context-Based Quotation Recommendation
-		c. Catching Attention with Automatic Pull Quote Selection 
-		d. Osv. 
-	3. Quote extraction
-	4. Methods
-	5. Dataset
-	6. Results And Analysis
+		a. On quote extraction or similar
+			i. Quote Extraction and Analysis for News
+			ii. Context-Based Quotation Recommendation
+			iii. Catching Attention with Automatic Pull Quote Selection
+			iiii. Osv.
+		b. On classification of sentences
+			i. Naive approach?
+			ii. BERT to the rescue 
+	3. Description of Approach
+		a. overview of our intended proces:
+			i. collect and preprocess data
+			ii. select and train BERT model
+			iii. train and tune classifier
+			iiii. prototype for classification of unknown data
+	4. Dataset
+		a. Positives - quotes from dr.dk
+			i. description
+			ii. extraction and segmentation
+		b. Negatives
+			i. description
+			ii. segmentation
+		c. analysis
+			i. statistics on data 
+	5. Training BERT
+	6. Choosing and training a classification model
+	7. Results And Analysis
+		a. statistics, confusion matrix
+		b. presentation of prototype
+
+
 Conclusion

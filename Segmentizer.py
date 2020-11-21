@@ -30,7 +30,8 @@ class Segmentizer:
                 pre = s[3]
             else: 
                 sent = pre+s[0]    
-            result.append(sent)
+            if len(result) < 400: # skip segments longer than 400 characters
+                result.append(sent)
 
         return result
 
