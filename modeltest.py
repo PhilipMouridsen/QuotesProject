@@ -54,7 +54,7 @@ predictions['proba'] = y_prob.tolist()
 # print (predictions)
 
 print('predicting on the queens speech...')
-queen = Segmentizer.textfile_to_dataframe('data/rapport.txt').reset_index(drop=True)
+queen = Segmentizer.textfile_to_dataframe('data/wiki.txt').reset_index(drop=True)
 queen.columns=['Quotes']
 print (queen)
 
