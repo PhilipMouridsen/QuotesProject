@@ -90,12 +90,9 @@ class QuoteBERT:
 
 # main for testing
 if __name__ == '__main__':
-    data = pd.read_csv('data/ft2016.tsv', sep='\t', index_col=0)
-    data = data.dropna().head(10000)
-    print(data)
-    data = data.iloc[:,0].values.tolist()
-    # print(data)
+    politik = pd.read_csv('largefiles/Quotes_Politik_69158.tsv', sep='\t', index_col=0).head(100).iloc[:,0].values.tolist()
+    
     qb = QuoteBERT()
-    qb.generate_vectors(data, save_file=True, sort=True, file_name='largemodels/ft2016_10000.bert')
-    vec = qb.get_vectors()
+    qb.generate_vectors(politik, save_file=True, sort=True, file_name='BERTModels/quotes_politik.bert')
+    # vec = qb.get_vectors()
 
