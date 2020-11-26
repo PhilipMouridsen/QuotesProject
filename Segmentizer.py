@@ -7,7 +7,7 @@ from afinn import Afinn
 
 class Segmentizer:
 
-    def get_segments(text, max_length=200):
+    def get_segments(text, max_length=300):
         pattern = "(([a-z]|[%!]|[1-9])\.) *([A-Z|Æ|Ø|Å])"
         
         text = text.replace(' hr. ', ' hr* ')
