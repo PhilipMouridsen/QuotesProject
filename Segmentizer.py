@@ -6,12 +6,16 @@ from afinn import Afinn
 
 
 class Segmentizer:
-    def __init__(self):
-        pass
 
-    def get_segments(text):
+    def get_segments(text, max_length=200):
         pattern = "(([a-z]|[%!]|[1-9])\.) *([A-Z|Æ|Ø|Å])"
-        sentences = re.split(pattern, text)
+        
+        text = text.replace(' hr. ', ' hr* ')
+        text = text.replace(' Hr. ', ' hr* ')
+        text = text.replace(' nr. ', ' nr* ')
+
+
+        sentences = re.split(pattern,text)
 
         def chunks(lst, n):
             """Yield successive n-sized chunks from lst."""
@@ -29,10 +33,15 @@ class Segmentizer:
                 sent = pre + s[0] + s[1]
                 pre = s[3]
             else: 
-                sent = pre+s[0]    
-            if len(result) < 400: # skip segments longer than 400 characters
-                result.append(sent)
+                sent = pre+s[0]
 
+                
+            if len(sent) < max_length: # skip segments longer than n characters
+                sent = sent.replace(' hr* ', ' hr. ')
+                sent = sent.replace(' nr* ', ' nr. ')
+                sent = sent.replace(' f.eks. ', ' for eksempel ')
+
+                result.append(sent)
         return result
 
     def textfile_to_dataframe(filename):
