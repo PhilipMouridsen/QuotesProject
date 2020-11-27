@@ -7,8 +7,8 @@ from segmentizer import Segmentizer
 quotes = pd.read_csv("largefiles/quotesAll.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
 quotes = quotes.explode('Quotes').drop(columns=['Pub.', 'Text', 'Titel', 'Format', 'HTML', 'URL'])
 quotes = quotes.dropna(subset=['Quotes'])
-quotes['Quotes'] = quotes.Quotes.apply(Segmentizer.get_segments)
-quotes = quotes.explode('Quotes')
+# quotes['Quotes'] = quotes.Quotes.apply(Segmentizer.get_segments)
+# quotes = quotes.explode('Quotes')
 
 
 pattern = r', '
@@ -29,16 +29,8 @@ genres = ['Nyheder', 'Indland', 'Udland', 'Sport', 'Kultur', 'Regionale', 'Polit
 for genre in genres:
     q = quotes[quotes['Område'] == genre]
     print(q)
-    filename = 'largefiles/Quotes_' + genre + "_" + str(len(q.index))+'.tsv'
+    filename = 'largefiles/Quotes_unsegmentized_' + genre + "_" + str(len(q.index))+'.tsv'
     q = q.drop(columns=['Område']).reset_index(drop=True)
     print(q)
     print (filename)
     q.to_csv(filename, sep='\t', encoding='utf-8')
-
-# nyheder = quotes[quotes['Område'] == 'Nyheder']
-# sport = quotes[quotes['Område'] == 'Sport']
-# indland = quotes[quotes['Område'] == 'Indland']
-# kultur = quotes[quotes['Område'] == 'Kultur']
-# udland = quotes[quotes['Område'] == 'Udland']
-
-

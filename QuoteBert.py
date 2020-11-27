@@ -27,6 +27,8 @@ class QuoteBERT:
     # where it can be retrieved using pandas.from_csv()
     def generate_vectors(self, data, save_file=False, file_name='largefiles/model.bert', sort=False):
         
+        print(type(data))
+
         # sorting the strings by length speeds up the tokenization
         if sort == True: data = sorted(data, key=len)
         self.X = np.empty((0,768))
@@ -68,6 +70,7 @@ class QuoteBERT:
             
             # add the newly generated batch of vectors to the collection
             self.X = np.concatenate((self.X,vectors), axis=0)
+            # maybe make a list and concatenate in the end
         
         t = time.time()-t
         print()
@@ -76,6 +79,9 @@ class QuoteBERT:
 
         if save_file == True:
             self.save_to_file(file_name)
+    
+        print(self.X)
+        return self.X
 
 # return the vectors
     def get_vectors(self):
@@ -90,9 +96,20 @@ class QuoteBERT:
 
 # main for testing
 if __name__ == '__main__':
-    politik = pd.read_csv('largefiles/Quotes_Politik_69158.tsv', sep='\t', index_col=0).head(100).iloc[:,0].values.tolist()
-    
+    politik = pd.read_csv('largefiles/Quotes_unsegmentized_Politik_36877.tsv', sep='\t', index_col=0).head(10000).iloc[:,0].values.tolist()
+    # sport = pd.read_csv('largefiles/Quotes_Sport_92823.tsv', sep='\t', index_col=0).iloc[:,0].values.tolist()
+    # kultur = pd.read_csv('largefiles/Quotes_kultur_68104.tsv', sep='\t', index_col=0).iloc[:,0].values.tolist()
+    # nyheder = pd.read_csv('largefiles/Quotes_Nyheder_480052.tsv', sep='\t', index_col=0).iloc[:,0].values.tolist()
+    # negatives = pd.read_csv('data/ft2016_full.tsv', sep='\t', index_col=0).iloc[:,0].dropna().values.tolist()
+
+
     qb = QuoteBERT()
-    qb.generate_vectors(politik, save_file=True, sort=True, file_name='BERTModels/quotes_politik.bert')
+    qb.generate_vectors(politik, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_politik.bert')
+    # qb.generate_vectors(nyheder, save_file=True, sort=True, file_name='BERTModels/quotes_nyheder.bert')
+    # qb.generate_vectors(sport, save_file=True, sort=True, file_name='BERTModels/quotes_sport.bert')
+    # qb.generate_vectors(kultur, save_file=True, sort=True, file_name='BERTModels/quotes_kultur.bert')
+    # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives.bert')
+
+
     # vec = qb.get_vectors()
 

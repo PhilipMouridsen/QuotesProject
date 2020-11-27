@@ -27,8 +27,8 @@ Abstract
 			ii. segmentation
 		c. analysis
 			i. statistics on data 
-	5. Training BERT
-	6. Choosing and training a classification model
+	5. Training BERT - METHOD
+	6. Choosing and training a classification model - METHOD
 	7. Results And Analysis
 		a. statistics, confusion matrix
 		b. presentation of prototype
