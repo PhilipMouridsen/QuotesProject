@@ -27,8 +27,6 @@ class QuoteBERT:
     # where it can be retrieved using pandas.from_csv()
     def generate_vectors(self, data, save_file=False, file_name='largefiles/model.bert', sort=False):
         
-        print(type(data))
-
         # sorting the strings by length speeds up the tokenization
         if sort == True: data = sorted(data, key=len)
         self.X = np.empty((0,768))
@@ -41,35 +39,49 @@ class QuoteBERT:
 
         iteration = 0
         n_iterations = len(batches)
+        sent_set = set()
         
         # loop to process each batch
         for batch in batches:
-            iteration += 1 # counter
-            print('Training BERT - iteration', iteration,'/', n_iterations, end='\r')
-
-            # transform the sentences to tokens
-            tokenized = list(map(lambda x: self.tokenizer.encode(x, add_special_tokens=True), batch))
-
-            # add padding for uniform lengths
-            max_len = 0
-            for i in tokenized:
-                if len(i) > max_len:
-                    max_len = len(i)
-
-            padded = np.array([i + [0]*(max_len-len(i)) for i in tokenized])
-
-            # do the actual work - and get the precious vectors
-            attention_mask = np.where(padded != 0, 1, 0)
-            input_ids = torch.tensor(padded).to(torch.long)  
-            attention_mask = torch.tensor(attention_mask)
-
-            with torch.no_grad():
-                last_hidden_states = self.model(input_ids, attention_mask=attention_mask)
             
-            vectors = last_hidden_states[0][:,0,:].numpy()
             
-            # add the newly generated batch of vectors to the collection
-            self.X = np.concatenate((self.X,vectors), axis=0)
+            vectors =[]
+            
+            # check if sentence has already been seen and dealt with
+            for b in batch[:]:
+                # print(b)
+                if b in sent_set:
+                    batch.remove(b)
+                else:
+                    sent_set.add(b)
+
+            if len(batch)>0:
+                iteration += 1 # counter
+                print('Training BERT - iteration', iteration,'/', n_iterations)
+
+                # transform the sentences to tokens
+                tokenized = list(map(lambda x: self.tokenizer.encode(x, add_special_tokens=True), batch))
+
+                # add padding for uniform lengths
+                max_len = 0
+                for i in tokenized:
+                    if len(i) > max_len:
+                        max_len = len(i)
+
+                padded = np.array([i + [0]*(max_len-len(i)) for i in tokenized])
+
+                # do the actual work - and get the precious vectors
+                attention_mask = np.where(padded != 0, 1, 0)
+                input_ids = torch.tensor(padded).to(torch.long)  
+                attention_mask = torch.tensor(attention_mask)
+
+                with torch.no_grad():
+                    last_hidden_states = self.model(input_ids, attention_mask=attention_mask)
+                
+                vectors = last_hidden_states[0][:,0,:].numpy()
+                
+                # add the newly generated batch of vectors to the collection
+                self.X = np.concatenate((self.X,vectors), axis=0)
             # maybe make a list and concatenate in the end
         
         t = time.time()-t
@@ -80,7 +92,6 @@ class QuoteBERT:
         if save_file == True:
             self.save_to_file(file_name)
     
-        print(self.X)
         return self.X
 
 # return the vectors
@@ -89,6 +100,7 @@ class QuoteBERT:
 
 # save vectors to file as a Pandas Dataframe
     def save_to_file(self, filename):
+        filename = filename + '_' + str(len(self.X)) +'.bert'
         df = pd.DataFrame(self.X)
         df.to_csv(filename)
         print('BERT vectors saved to ', filename)
@@ -96,19 +108,34 @@ class QuoteBERT:
 
 # main for testing
 if __name__ == '__main__':
-    politik = pd.read_csv('largefiles/Quotes_unsegmentized_Politik_36877.tsv', sep='\t', index_col=0).head(10000).iloc[:,0].values.tolist()
-    # sport = pd.read_csv('largefiles/Quotes_Sport_92823.tsv', sep='\t', index_col=0).iloc[:,0].values.tolist()
-    # kultur = pd.read_csv('largefiles/Quotes_kultur_68104.tsv', sep='\t', index_col=0).iloc[:,0].values.tolist()
-    # nyheder = pd.read_csv('largefiles/Quotes_Nyheder_480052.tsv', sep='\t', index_col=0).iloc[:,0].values.tolist()
-    # negatives = pd.read_csv('data/ft2016_full.tsv', sep='\t', index_col=0).iloc[:,0].dropna().values.tolist()
+    # politik = pd.read_csv('largefiles/Quotes_unsegmentized_Politik_36877.tsv', sep='\t', index_col=0).head(100000).iloc[:,0].values.tolist()
+    # sport = pd.read_csv('largefiles/Quotes_unsegmentized_Sport_44408.tsv', sep='\t', index_col=0).iloc[:,0].head(100000).values.tolist()
+    # kultur = pd.read_csv('largefiles/Quotes_unsegmentized_Kultur_32842.tsv', sep='\t', index_col=0).head(100000).iloc[:,0].values.tolist()
+    negatives = pd.read_csv('largefiles/ft2016_combined.tsv', sep='\t', index_col=0).sample(n=30000).iloc[:,0]
+    # nyheder = pd.read_csv('largefiles/Quotes_unsegmentized_Nyheder_258502.tsv', sep='\t', index_col=0).iloc[:,0].dropna().reset_index(drop=True).head(100000)
 
+    # print(negatives)
+    negatives = negatives.dropna()
+    # print(negatives)
 
+    negatives = negatives.values.tolist()
+    # print(negatives)
+
+    # print(negatives)
+
+    # nyheder = nyheder[nyheder.map(len) < 600].reset_index(drop=True) # drop very long sentences as they are probably due to error in data
+
+    # nyheder = nyheder.values.tolist()
+
+    # nyheder = pd.read_csv('largefiles/Quotes_unsegmentized_Nyheder_258502.tsv', sep='\t', index_col=0).head(10010).dropna().reset_index(drop=True).iloc[:,0].values.tolist()
+    
     qb = QuoteBERT()
-    qb.generate_vectors(politik, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_politik.bert')
-    # qb.generate_vectors(nyheder, save_file=True, sort=True, file_name='BERTModels/quotes_nyheder.bert')
-    # qb.generate_vectors(sport, save_file=True, sort=True, file_name='BERTModels/quotes_sport.bert')
-    # qb.generate_vectors(kultur, save_file=True, sort=True, file_name='BERTModels/quotes_kultur.bert')
-    # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives.bert')
+    # qb.generate_vectors(politik, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_politik.bert')
+    # qb.generate_vectors(sport, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_sport')
+    # qb.generate_vectors(kultur, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_kultur')
+    # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives')
+    # qb.generate_vectors(nyheder, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_nyheder')
+    qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives_combined')
 
 
     # vec = qb.get_vectors()

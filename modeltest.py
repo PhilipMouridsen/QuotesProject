@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from segmentizer import Segmentizer
@@ -14,8 +13,9 @@ from joblib import dump, load
 from quotebert import QuoteBERT
 import prototype
 
-positives = pd.read_csv('BERTModels/quotes_unsegmentized_politik.bert', index_col=0)
-negatives = pd.read_csv('BERTModels/negatives.bert', index_col=0)
+positives = pd.read_csv('BERTModels/quotes_unsegmentized_nyheder_99962.bert', index_col=0).sample(n=27000)
+print (positives)
+negatives = pd.read_csv('BERTModels/negatives_combined_27081.bert', index_col=0)
 positives['label'] = 1
 negatives['label'] = 0
 

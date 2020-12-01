@@ -24,7 +24,7 @@ print (quotes.groupby('Område').count().sort_values(by='Quotes'))
 
 pd.set_option('display.max_rows', 10)
 
-genres = ['Nyheder', 'Indland', 'Udland', 'Sport', 'Kultur', 'Regionale', 'Politik', 'Politik', 'Penge']
+genres = ['Nyheder', 'Indland', 'Udland', 'Sport', 'Kultur', 'Regionale', 'Politik', 'Penge']
 
 for genre in genres:
     q = quotes[quotes['Område'] == genre]
