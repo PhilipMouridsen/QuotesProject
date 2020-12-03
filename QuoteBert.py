@@ -25,7 +25,7 @@ class QuoteBERT:
     # takes a list of strings and generates BERT vectors for each.
     # The resulting list of vectors is stored in QuoteBert object and optionally saved to file
     # where it can be retrieved using pandas.from_csv()
-    def generate_vectors(self, data, save_file=False, file_name='largefiles/model.bert', sort=False):
+    def generate_vectors(self, data, save_file=False, file_name='largefiles/model.bert', sort=False, b_size=4):
         
         # sorting the strings by length speeds up the tokenization
         if sort == True: data = sorted(data, key=len)
@@ -34,7 +34,7 @@ class QuoteBERT:
         t = time.time()
 
         # split data into batches so the BERT process does not run out of memory
-        batch_size = 4
+        batch_size = b_size
         batches = [data[i:min(i + batch_size, len(data))] for i in range(0, len(data), batch_size)]
 
         iteration = 0
@@ -48,7 +48,7 @@ class QuoteBERT:
             vectors =[]
             
             # check if sentence has already been seen and dealt with
-            for b in batch[:]:
+            for b in batch[:]: # iterate over a copy to avoid problems when removing elements
                 # print(b)
                 if b in sent_set:
                     batch.remove(b)
@@ -57,11 +57,11 @@ class QuoteBERT:
 
             if len(batch)>0:
                 iteration += 1 # counter
-                print('Training BERT - iteration', iteration,'/', n_iterations)
+                # print('Training BERT - iteration', iteration,'/', n_iterations)
 
                 # transform the sentences to tokens
                 tokenized = list(map(lambda x: self.tokenizer.encode(x, add_special_tokens=True), batch))
-
+                # print (tokenized)
                 # add padding for uniform lengths
                 max_len = 0
                 for i in tokenized:
@@ -70,16 +70,17 @@ class QuoteBERT:
 
                 padded = np.array([i + [0]*(max_len-len(i)) for i in tokenized])
 
-                # do the actual work - and get the precious vectors
+                #  get the precious vectors
                 attention_mask = np.where(padded != 0, 1, 0)
                 input_ids = torch.tensor(padded).to(torch.long)  
                 attention_mask = torch.tensor(attention_mask)
-
+                # print(input_ids)
                 with torch.no_grad():
                     last_hidden_states = self.model(input_ids, attention_mask=attention_mask)
                 
                 vectors = last_hidden_states[0][:,0,:].numpy()
-                
+                # print(vectors)
+
                 # add the newly generated batch of vectors to the collection
                 self.X = np.concatenate((self.X,vectors), axis=0)
             # maybe make a list and concatenate in the end
@@ -88,6 +89,7 @@ class QuoteBERT:
         print()
         print('DONE getting vectors')
         print('Fetched', len(self.X), 'vectors in', t, 'seconds. Average time:', t/len(self.X), 'per sample')
+        print('Batch Size =', batch_size)
 
         if save_file == True:
             self.save_to_file(file_name)
@@ -109,16 +111,16 @@ class QuoteBERT:
 # main for testing
 if __name__ == '__main__':
     # politik = pd.read_csv('largefiles/Quotes_unsegmentized_Politik_36877.tsv', sep='\t', index_col=0).head(100000).iloc[:,0].values.tolist()
-    # sport = pd.read_csv('largefiles/Quotes_unsegmentized_Sport_44408.tsv', sep='\t', index_col=0).iloc[:,0].head(100000).values.tolist()
+    sport = pd.read_csv('largefiles/Quotes_unsegmentized_Sport_44408.tsv', sep='\t', index_col=0).iloc[:,0].sample(1000).values.tolist()
     # kultur = pd.read_csv('largefiles/Quotes_unsegmentized_Kultur_32842.tsv', sep='\t', index_col=0).head(100000).iloc[:,0].values.tolist()
-    negatives = pd.read_csv('largefiles/ft2016_combined.tsv', sep='\t', index_col=0).sample(n=30000).iloc[:,0]
+    # negatives = pd.read_csv('largefiles/ft2016_combined.tsv', sep='\t', index_col=0).sample(n=30000).iloc[:,0]
     # nyheder = pd.read_csv('largefiles/Quotes_unsegmentized_Nyheder_258502.tsv', sep='\t', index_col=0).iloc[:,0].dropna().reset_index(drop=True).head(100000)
 
     # print(negatives)
-    negatives = negatives.dropna()
+    # negatives = negatives.dropna()
     # print(negatives)
 
-    negatives = negatives.values.tolist()
+    # negatives = negatives.values.tolist()
     # print(negatives)
 
     # print(negatives)
@@ -135,7 +137,12 @@ if __name__ == '__main__':
     # qb.generate_vectors(kultur, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_kultur')
     # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives')
     # qb.generate_vectors(nyheder, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_nyheder')
-    qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives_combined')
+    # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives_combined')
+
+    sizes =[1,2,4,8,16,32,64,128,256]
+
+    for s in sizes:
+        qb.generate_vectors(sport, save_file=False, sort=True, b_size=s)
 
 
     # vec = qb.get_vectors()

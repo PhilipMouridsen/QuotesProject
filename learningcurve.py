@@ -8,6 +8,8 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.linear_model import LogisticRegression
 
 
+# THIS CODE IS NOT WRITTEN BY MYSELF
+# IT IS TAKEN FROM THE SKLEARN ONLINE TUTORIALS
 def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
     """
@@ -118,7 +120,7 @@ fig, axes = plt.subplots(1, 1, figsize=(10, 15))
 
 
 positives = pd.read_csv('BERTModels/quotes_unsegmentized_politik.bert', index_col=0).sample(n=10000)
-negatives = pd.read_csv('BERTModels/negatives_170756.bert', index_col=0).sample(n=10000)
+negatives = pd.read_csv('BERTModels/negatives_combined_27081.bert', index_col=0).sample(n=10000)
 positives['label'] = 1
 negatives['label'] = 0
 print('data loaded')

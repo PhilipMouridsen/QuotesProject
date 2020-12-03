@@ -1,0 +1,179 @@
+C:\Code\Quotes>C:/Users/lass/AppData/Local/Programs/Python/Python38/python.exe c:/Code/Quotes/modeltest2.py
+LOADED DATA
+POSITIVE DATA: Nyheder
+RATIO: 1
+POSITIVES: 99962
+NEGATIVES: 27081
+20000
+LOGISTIC REGRESSION
+              precision    recall  f1-score   support
+
+           0       0.90      0.95      0.93      1991
+           1       0.95      0.89      0.92      2009
+
+    accuracy                           0.92      4000
+   macro avg       0.92      0.92      0.92      4000
+weighted avg       0.92      0.92      0.92      4000
+
+SCORE: 0.92325
+SVC
+
+
+              precision    recall  f1-score   support
+
+           0       0.85      0.99      0.92      1991
+           1       0.99      0.83      0.90      2009
+
+    accuracy                           0.91      4000
+   macro avg       0.92      0.91      0.91      4000
+weighted avg       0.92      0.91      0.91      4000
+
+SCORE: 0.91025
+POSITIVE DATA: Sport
+RATIO: 1
+POSITIVES: 44408
+NEGATIVES: 27081
+20000
+LOGISTIC REGRESSION
+              precision    recall  f1-score   support
+
+           0       0.95      0.97      0.96      1995
+           1       0.97      0.95      0.96      2005
+
+    accuracy                           0.96      4000
+   macro avg       0.96      0.96      0.96      4000
+weighted avg       0.96      0.96      0.96      4000
+
+SCORE: 0.961
+SVC
+
+
+              precision    recall  f1-score   support
+
+           0       0.93      0.98      0.95      1995
+           1       0.98      0.92      0.95      2005
+
+    accuracy                           0.95      4000
+   macro avg       0.95      0.95      0.95      4000
+weighted avg       0.95      0.95      0.95      4000
+
+SCORE: 0.9525
+POSITIVE DATA: Politik
+RATIO: 1
+POSITIVES: 10000
+NEGATIVES: 27081
+20000
+LOGISTIC REGRESSION
+              precision    recall  f1-score   support
+
+           0       0.84      0.95      0.89      1981
+           1       0.94      0.82      0.88      2019
+
+    accuracy                           0.88      4000
+   macro avg       0.89      0.88      0.88      4000
+weighted avg       0.89      0.88      0.88      4000
+
+SCORE: 0.88375
+SVC
+
+
+              precision    recall  f1-score   support
+
+           0       0.77      1.00      0.87      1981
+           1       1.00      0.70      0.82      2019
+
+    accuracy                           0.85      4000
+   macro avg       0.88      0.85      0.85      4000
+weighted avg       0.88      0.85      0.85      4000
+
+SCORE: 0.84925
+
+
+
+POSITIVES: NYHEDER
+
+                                                                                                Quotes  predict     score
+75                                                                                   GUD BEVARE DANMARK        1  0.998595
+36                                                                           Det vil jeg aldrig glemme!        1  0.990799
+59  Prins Joachim og Prinsesse Marie med deres to børn er i Paris, hvor Prins Joachim efteruddanner ...        1  0.982153
+0   I år var det 50 år siden, at mennesket landede på månen og vi fik vores egen planet Jorden at se...        1  0.922072
+48            Under fjerne himmelstrøg bidrager vore danske udsendte soldater til frihed og stabilitet.        1  0.914996
+28  I tusindvis strømmede folk til fra hele landet for at opleve Kong Christian X ride over grænsen ...        1  0.862968
+63                                                 Han bliver snart en ung mand og har livet foran sig.        1  0.838333
+9   Hvem vil lege med mig? Hvem har jeg at snakke med? Ikke bare på Facebook, men rigtigt: ansigt ti...        1  0.756383
+4                       Vi har en fælles forpligtelse for vores smukke klode, så myldrende fuld af liv.        1  0.731227
+50  Jeg sender mine varmeste hilsener og gode ønsker for det nye år til alle udsendte og til deres f...        1  0.724573
+
+
+BOTTOM 10 QUOTE CANDIDATES
+                                                                                                 Quotes  predict     score
+68                                                                         Nu står året 2020 for døren.        0  0.006705
+17                                           Der gik 5 år, men så kom Befrielsen den 4. og 5. maj 1945.        0  0.017617
+32                                   Det blev også til et uforglemmeligt møde med det danske mindretal.        0  0.020463
+23  Det er beskæmmende at opleve, hvordan antisemitismen igen stikker sit grimme ansigt frem, også h...        0  0.025359
+43                                           Et godt og lykkeligt nytår ønsker jeg for alle i Grønland.        0  0.027363
+6   I vores tid har der sneget sig en følelse ind, som kan være svær at tale om, men som vi må sætte...        0  0.032340
+67                                                             Det både inspirerer os og forpligter os.        0  0.073246
+62                                                       I det nye år skal Prins Christian konfirmeres.        0  0.074549
+27  Genforeningsdagen blev en mærkedag, ikke blot for sønderjyderne, men en dag, som inddrog hele Da...        0  0.083078
+8   Det gælder ikke alene socialt udsatte, det gælder ældre mennesker, som ser deres ægtefælle og de...        0  0.090611
+
+
+
+
+POSITIVES: POLITIK
+TOP 10 QUOTE CANDIDATES
+                                                                                                 Quotes  predict     score
+75                                                                                   GUD BEVARE DANMARK        1  0.931501
+48            Under fjerne himmelstrøg bidrager vore danske udsendte soldater til frihed og stabilitet.        1  0.881584
+36                                                                           Det vil jeg aldrig glemme!        1  0.878338
+28  I tusindvis strømmede folk til fra hele landet for at opleve Kong Christian X ride over grænsen ...        1  0.753016
+70                                Vi linder på døren, det er som et nyt bekendtskab med nye muligheder.        1  0.689085
+0   I år var det 50 år siden, at mennesket landede på månen og vi fik vores egen planet Jorden at se...        1  0.681753
+53  Mænd og kvinder, der alle passer deres post, mens andre kan holde fri og fejre nytåret trygt og ...        1  0.632424
+50  Jeg sender mine varmeste hilsener og gode ønsker for det nye år til alle udsendte og til deres f...        1  0.564254
+19  Men glæden kunne ikke deles af alle, for Bornholm måtte først gennemleve et bombardement, der gi...        1  0.561457
+31  I sensommeren besøgte jeg Slesvig-Holsten, hvor jeg fik en varm og festlig modtagelse, som var m...        1  0.555656
+
+
+BOTTOM 10 QUOTE CANDIDATES
+                                                                                                 Quotes  predict     score
+23  Det er beskæmmende at opleve, hvordan antisemitismen igen stikker sit grimme ansigt frem, også h...        0  0.015447
+38                                                         Det er blevet et forbillede for hele verden.        0  0.020539
+6   I vores tid har der sneget sig en følelse ind, som kan være svær at tale om, men som vi må sætte...        0  0.021957
+68                                                                         Nu står året 2020 for døren.        0  0.032194
+32                                   Det blev også til et uforglemmeligt møde med det danske mindretal.        0  0.047607
+8   Det gælder ikke alene socialt udsatte, det gælder ældre mennesker, som ser deres ægtefælle og de...        0  0.056145
+43                                           Et godt og lykkeligt nytår ønsker jeg for alle i Grønland.        0  0.060211
+62                                                       I det nye år skal Prins Christian konfirmeres.        0  0.073250
+17                                           Der gik 5 år, men så kom Befrielsen den 4. og 5. maj 1945.        0  0.077905
+45                                             Også herfra har jeg og min familie varme og gode minder.        0  0.079398
+
+
+
+POSITIVES:SPORT
+                                                                                                Quotes  predict     score
+75                                                                                   GUD BEVARE DANMARK        1  0.999901
+63                                                 Han bliver snart en ung mand og har livet foran sig.        1  0.934593
+66  Jeg er taknemmelig for alt, hvad årene bringer mig, og for al den varme, som jeg og hele min fam...        1  0.894290
+36                                                                           Det vil jeg aldrig glemme!        1  0.877004
+0   I år var det 50 år siden, at mennesket landede på månen og vi fik vores egen planet Jorden at se...        1  0.823915
+28  I tusindvis strømmede folk til fra hele landet for at opleve Kong Christian X ride over grænsen ...        1  0.801973
+59  Prins Joachim og Prinsesse Marie med deres to børn er i Paris, hvor Prins Joachim efteruddanner ...        1  0.772672
+48            Under fjerne himmelstrøg bidrager vore danske udsendte soldater til frihed og stabilitet.        1  0.737669
+70                                Vi linder på døren, det er som et nyt bekendtskab med nye muligheder.        1  0.732312
+73                                                                      Jeg ønsker alle et godt nyt år.        1  0.691620
+
+
+BOTTOM 10 QUOTE CANDIDATES
+                                                                                                 Quotes  predict     score
+68                                                                         Nu står året 2020 for døren.        0  0.002800
+14                                                               2020 bliver et år med meget at mindes.        0  0.005550
+32                                   Det blev også til et uforglemmeligt møde med det danske mindretal.        0  0.006087
+8   Det gælder ikke alene socialt udsatte, det gælder ældre mennesker, som ser deres ægtefælle og de...        0  0.007946
+23  Det er beskæmmende at opleve, hvordan antisemitismen igen stikker sit grimme ansigt frem, også h...        0  0.009626
+27  Genforeningsdagen blev en mærkedag, ikke blot for sønderjyderne, men en dag, som inddrog hele Da...        0  0.025938
+34                                                           Men Danmark er og bliver jeres hjerteland.        0  0.027160
+55  I foråret besøgte jeg Argentina, også dér bor der mange, hvis rødder er i Danmark og som holder ...        0  0.033454
+49                                Det skal vi huske på denne aften, hvor de er ekstra savnet herhjemme.        0  0.040154
+51                                                   Det er ikke kun ude i verden, der er folk på vagt.        0  0.040970

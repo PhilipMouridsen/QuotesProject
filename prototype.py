@@ -42,7 +42,7 @@ def to_html(lst):
 
 strings = ['sætning nummer 1. ', 'sætning nummer 2', 'sætning nummer 3', 'sætning nummer 4']
         
-
+# for testing
 if __name__ == "__main__":
     empty = "_________"
     quotes = [['I år var det 50 år siden, at mennesket landede på månen og vi fik vores egen planet Jorden at se som en lille klode i det store rum: ganske alene, men så smuk og rund og blå: Planeten, hvor vi har hjemme.', 0.99533694679188373], ['For os her i Danmark er det måske ikke så overraskende, at planeten er blå, for vi har jo havet foran os og den blå himmel over os.', 0.06841709123095198], ['Så storslået og varieret vor Jord end kan synes, er den dog sårbar.', 0.45], ['Det er vi ved at lære at indse, og det kan godt bekymre, ikke mindst mange unge, som ser klimaforandringerne, der gør sig tydeligt gældende i disse år.', 0.55]]

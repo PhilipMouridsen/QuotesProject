@@ -4,31 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 print("reading data")
-data = pd.read_csv("data/quotes10000.csv", encoding="utf-16", sep='\t', index_col=0, converters={'Quotes': eval})
+quotes = pd.read_csv("largefiles/Quotes_unsegmentized_Nyheder_258502.tsv", encoding="utf-8", sep='\t', index_col=0)
+negatives = pd.read_csv("largefiles/ft2016_combined.tsv", encoding="utf-8", sep='\t', index_col=0)
 print("DONE reading data")
 
-data['nQuotes'] = data.apply(lambda row: len(row.Quotes), axis=1)
+pd.set_option('display.max_colwidth', -1)
 
-print(data.info())
-data.describe()
-print(data)
-
-print (data['Område'])
-
-hist = data.hist(column='nQuotes', bins=50)
-plt.show()
- 
-
-
-nQuotes = 0
-articles_with_quotes = 0
-for quotes in data['Quotes']:
-    nQuotes = nQuotes + len(quotes)
-    if len(quotes) > 0: articles_with_quotes += 1
-
-print("Number of articles:")
-print(articles_with_quotes)
-print("number of quotes:")
-print (nQuotes)
-print()
-print ("avg", nQuotes/articles_with_quotes)
+print(quotes.sample(n=10))
+print(negatives.sample(n=10))

@@ -12,7 +12,7 @@ from afinn import Afinn
 
 
 
-# load and preprocess the quptes
+# load and preprocess the quotes
 quotes = pd.read_csv("largefiles/quotesAll.csv", encoding='utf-16', sep='\t', index_col=0, converters={'Quotes': eval})
 quotes = quotes.explode('Quotes').drop(columns=['Pub.', 'Text', 'Titel', 'Format', 'HTML', 'URL'])
 quotes = quotes.dropna(subset=['Quotes'])
@@ -38,7 +38,7 @@ quotes['n_quotes'] = quotes.Quotes.apply(len)
 
 nyheder = pd.read_csv("largefiles/Quotes_unsegmentized_Nyheder_258502.tsv", encoding='utf-8', sep='\t', index_col=0).sample(n=1000)
 politik = pd.read_csv("largefiles/Quotes_unsegmentized_Politik_36877.tsv", encoding='utf-8', sep='\t', index_col=0).sample(n=1000)
-negatives = pd.read_csv("largefiles/ft2016_full.tsv", encoding='utf-8', sep='\t', index_col=0).dropna().sample(n=1000)
+negatives = pd.read_csv("largefiles/ft2016_combined.tsv", encoding='utf-8', sep='\t', index_col=0).dropna().sample(n=1000)
 kultur = pd.read_csv("largefiles/Quotes_unsegmentized_Nyheder_258502.tsv", encoding='utf-8', sep='\t', index_col=0).sample(n=1000)
 sport = pd.read_csv("largefiles/Quotes_unsegmentized_Nyheder_258502.tsv", encoding='utf-8', sep='\t', index_col=0).sample(n=1000)
 
@@ -96,9 +96,8 @@ plt.show()
 # print(quotes.n_quotes.sum())
 
 
-exit()
 
-negatives = pd.read_csv("BERTModels/negatives_170756.bert", encoding='utf-8').sample(n=1000)
+negatives = pd.read_csv("BERTModels/negatives_combined_27081.bert", encoding='utf-8').sample(n=1000)
 kultur = pd.read_csv("BERTModels/quotes_unsegmentized_kultur_32842.bert", encoding='utf-8').sample(n=1000)
 politik = pd.read_csv("BERTModels/quotes_unsegmentized_politik.bert", encoding='utf-8').sample(n=1000)
 sport = pd.read_csv("BERTModels/quotes_unsegmentized_sport_44408.bert", encoding='utf-8').sample(n=1000)

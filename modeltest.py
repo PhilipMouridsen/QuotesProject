@@ -13,9 +13,12 @@ from joblib import dump, load
 from quotebert import QuoteBERT
 import prototype
 
-positives = pd.read_csv('BERTModels/quotes_unsegmentized_nyheder_99962.bert', index_col=0).sample(n=27000)
-print (positives)
-negatives = pd.read_csv('BERTModels/negatives_combined_27081.bert', index_col=0)
+positives = pd.read_csv('BERTModels/quotes_unsegmentized_nyheder_99962.bert', index_col=0).sample(n=10000)
+# positives = pd.read_csv('BERTModels/quotes_unsegmentized_politik.bert', index_col=0).sample(n=10000)
+# positives = pd.read_csv('BERTModels/quotes_unsegmentized_sport_44408.bert', index_col=0).sample(n=10000)
+
+
+negatives = pd.read_csv('BERTModels/negatives_combined_27081.bert', index_col=0).sample(n=10000)
 positives['label'] = 1
 negatives['label'] = 0
 
@@ -28,7 +31,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 
 # rfc = RandomForestClassifier()
-log_res = LogisticRegression(max_iter=10000)
+log_res = LogisticRegression(max_iter=100)
 # maybe svm - different kernel
 # big_model = load('models/quotemodel_108016')
 
@@ -53,7 +56,7 @@ predictions['proba'] = y_prob.tolist()
 # print (predictions)
 
 print('predicting on new data...')
-text = Segmentizer.textfile_to_dataframe('data/queen2019.txt').reset_index(drop=True)
+text = Segmentizer.textfile_to_dataframe('data/queen2019.txt', make_doubles=False).reset_index(drop=True)
 text = text.dropna()
 qb = QuoteBERT()
 X = qb.generate_vectors(text.iloc[:,0].values.tolist())
@@ -63,7 +66,7 @@ text['predict'] = predictions
 text['score'] = log_res.predict_proba(X)[:,1]
 pd.set_option('display.max_rows', None)
 
-pd.set_option('display.max_colwidth', 100)
+pd.set_option('display.max_colwidth', None)
 print (text[['Quotes', 'predict','score']])
 
 print ('TOP 10 QUOTE CANDIDATES')
