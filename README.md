@@ -6,16 +6,18 @@ This repo contains code and (sample) data files
 ### quotebert.py
 Class for generating BERT vectors
 
-### segmentizer.py¨
+### segmentizer.py
 Class that splits strings into segments divided by "."
 
 ### prototype.py
-Main class predicting on unknown text and producing a visualization of result
+Main class predicting on unknown text and producing a visualization of result.
+Using the data files in the models folder for illustration. These models are NOT the full scale versions as they are too large for version control. Result from report cannot be reproduced.
 
 ## Data
 
 ### models folder
 folder holding the files with the BERT vectors after conversion.
+Please note that this repo only contains small sample files to make prototype.py. 
 
 ## Misc Scripts
 ### dataexploration.py
