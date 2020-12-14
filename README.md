@@ -14,7 +14,7 @@ Main class predicting on unknown text and producing a visualization of result
 
 ## Data
 
-### models
+### models folder
 folder holding the files with the BERT vectors after conversion.
 
 ## Misc Scripts
