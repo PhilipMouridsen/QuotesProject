@@ -92,11 +92,6 @@ plt.xlim(right=8)
 
 plt.show()
 
-# print(quotes.sort_values(by='n_quotes'))
-# print(quotes.n_quotes.sum())
-
-
-
 negatives = pd.read_csv("BERTModels/negatives_combined_27081.bert", encoding='utf-8').sample(n=1000)
 kultur = pd.read_csv("BERTModels/quotes_unsegmentized_kultur_32842.bert", encoding='utf-8').sample(n=1000)
 politik = pd.read_csv("BERTModels/quotes_unsegmentized_politik.bert", encoding='utf-8').sample(n=1000)

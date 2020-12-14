@@ -32,7 +32,6 @@ def to_html(lst):
     for q, s in lst:
         body = body + '<span style=\"background-color:' + score_to_color_alpha(s) +';\">' + q + ' </span>'
 
-
     html = head + body + closing
     with open('test.html', 'w', encoding='utf-8') as file:      
         file.write(html)
