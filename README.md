@@ -12,8 +12,10 @@ Class that splits strings into segments divided by "."
 ### prototype.py
 Main class predicting on unknown text and producing a visualization of result
 
-### trainer.py
-Prepare data and convert to BERTvetors. Saving result to file for later processing.
+## Data
+
+### models
+folder holding the files with the BERT vectors after conversion.
 
 ## Misc Scripts
 ### dataexploration.py

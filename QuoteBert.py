@@ -108,41 +108,20 @@ class QuoteBERT:
         print('BERT vectors saved to ', filename)
 
 
-# main for testing
+# main for generating BERT vector files
 if __name__ == '__main__':
-    # politik = pd.read_csv('largefiles/Quotes_unsegmentized_Politik_36877.tsv', sep='\t', index_col=0).head(100000).iloc[:,0].values.tolist()
+    politik = pd.read_csv('largefiles/Quotes_unsegmentized_Politik_36877.tsv', sep='\t', index_col=0).sample(n=1000).iloc[:,0].values.tolist()
     sport = pd.read_csv('largefiles/Quotes_unsegmentized_Sport_44408.tsv', sep='\t', index_col=0).iloc[:,0].sample(1000).values.tolist()
-    # kultur = pd.read_csv('largefiles/Quotes_unsegmentized_Kultur_32842.tsv', sep='\t', index_col=0).head(100000).iloc[:,0].values.tolist()
-    # negatives = pd.read_csv('largefiles/ft2016_combined.tsv', sep='\t', index_col=0).sample(n=30000).iloc[:,0]
-    # nyheder = pd.read_csv('largefiles/Quotes_unsegmentized_Nyheder_258502.tsv', sep='\t', index_col=0).iloc[:,0].dropna().reset_index(drop=True).head(100000)
-
-    # print(negatives)
-    # negatives = negatives.dropna()
-    # print(negatives)
-
-    # negatives = negatives.values.tolist()
-    # print(negatives)
-
-    # print(negatives)
-
-    # nyheder = nyheder[nyheder.map(len) < 600].reset_index(drop=True) # drop very long sentences as they are probably due to error in data
-
-    # nyheder = nyheder.values.tolist()
-
-    # nyheder = pd.read_csv('largefiles/Quotes_unsegmentized_Nyheder_258502.tsv', sep='\t', index_col=0).head(10010).dropna().reset_index(drop=True).iloc[:,0].values.tolist()
-    
+    kultur = pd.read_csv('largefiles/Quotes_unsegmentized_Kultur_32842.tsv', sep='\t', index_col=0).sample(1000).iloc[:,0].values.tolist()
+    negatives = pd.read_csv('largefiles/ft2016_combined.tsv', sep='\t', index_col=0).dropna().sample(n=1000).iloc[:,0]
+    nyheder = pd.read_csv('largefiles/Quotes_unsegmentized_Nyheder_258502.tsv', sep='\t', index_col=0).sample(n=1000).iloc[:,0].dropna().reset_index(drop=True)    
     qb = QuoteBERT()
-    # qb.generate_vectors(politik, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_politik.bert')
-    # qb.generate_vectors(sport, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_sport')
-    # qb.generate_vectors(kultur, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_kultur')
-    # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives')
-    # qb.generate_vectors(nyheder, save_file=True, sort=True, file_name='BERTModels/quotes_unsegmentized_nyheder')
-    # qb.generate_vectors(negatives, save_file=True, sort=True, file_name='BERTModels/negatives_combined')
+    qb.generate_vectors(politik, save_file=True, sort=True, file_name='models/quotes_unsegmentized_politik')
+    qb.generate_vectors(sport, save_file=True, sort=True, file_name='models/quotes_unsegmentized_sport')
+    qb.generate_vectors(kultur, save_file=True, sort=True, file_name='models/quotes_unsegmentized_kultur')
+    qb.generate_vectors(nyheder, save_file=True, sort=True, file_name='models/quotes_unsegmentized_nyheder')
+    qb.generate_vectors(negatives, save_file=True, sort=True, file_name='models/negatives_combined')
 
-    sizes =[1,2,4,8,16,32,64,128,256]
-
-    for s in sizes:
-        qb.generate_vectors(sport, save_file=False, sort=True, b_size=s)
 
 
     # vec = qb.get_vectors()

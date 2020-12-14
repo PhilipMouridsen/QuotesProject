@@ -50,12 +50,20 @@ def to_html(lst):
     
     webbrowser.open('test.html')
 
-positives = pd.read_csv('BERTModels/quotes_unsegmentized_nyheder_99962.bert', index_col=0).sample(n=10000)
+
+
+# Example using a small dataset for illustration as large datafiles cannot be handled by github
+# Please note that data from report cannot be reproduced by this small subset of data
+positives = pd.read_csv('models/quotes_unsegmentized_nyheder_1000.bert', index_col=0)
+negatives = pd.read_csv('models/negatives_combined_947.bert', index_col=0)
+
+# positives = pd.read_csv('BERTModels/quotes_unsegmentized_nyheder_99962.bert', index_col=0).sample(n=10000)
 # positives = pd.read_csv('BERTModels/quotes_unsegmentized_politik.bert', index_col=0).sample(n=10000)
 # positives = pd.read_csv('BERTModels/quotes_unsegmentized_sport_44408.bert', index_col=0).sample(n=10000)
 
 
-negatives = pd.read_csv('BERTModels/negatives_combined_27081.bert', index_col=0).sample(n=10000)
+
+# negatives = pd.read_csv('BERTModels/negatives_combined_27081.bert', index_col=0).sample(n=10000)
 positives['label'] = 1
 negatives['label'] = 0
 
@@ -80,6 +88,7 @@ predictions['proba'] = y_prob.tolist()
 
 
 print('predicting on new data...')
+# change the file in the following line to test a different file
 text = Segmentizer.textfile_to_dataframe('data/queen2019.txt', make_doubles=False).reset_index(drop=True)
 text = text.dropna()
 qb = QuoteBERT()
